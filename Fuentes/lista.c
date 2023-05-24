@@ -56,4 +56,49 @@ int lista_insertar(lista_t *l, elemento_t elem, unsigned int pos){
 return salida;}
 
 
-/* */
+elemento_t * lista_eliminar(lista_t *l, unsigned int pos){
+    elemento_t* salida=NULL;
+    if(pos==0&&pos>l->cantidad)
+       exit(LST_POSICION_INVALIDA);
+    celda_t * lee=l->primera;
+    int pos_aux=0;
+    for(int i=0;i<l->cantidad;i++){
+       if(i!=pos)
+         lee=lee->siguiente;
+       pos_aux=i;}
+
+    if(pos_aux==l->cantidad)
+       salida=lee->elem;
+
+    else{
+        lee->elem=(lee->siguiente)->elem;
+        lee=lee->siguiente;}
+
+l->cantidad--;
+free(lee);
+return salida;}
+
+
+elemento_t *lista_elemento(lista_t *l, unsigned int pos){
+    if(pos==0&&pos==l->cantidad)
+        exit(LST_POSICION_INVALIDA);
+    celda_t * lee=l->primera;
+    for(int i=0;i<l->cantidad;i++)
+       if(i!=pos)
+         lee=lee->siguiente;
+
+return lee->elem;}
+
+
+int lista_ordenar(lista_t *l, funcion_comparacion_t comparar){
+return 1;}
+
+
+unsigned int lista_cantidad(lista_t *l){
+return l->cantidad;}
+
+
+int lista_vacia(lista_t lista){
+    lista_t *l=&lista;
+return l->cantidad==0;}
+
