@@ -98,7 +98,7 @@ unsigned int lista_cantidad(lista_t *l){
 return l->cantidad;}
 
 
-int lista_vacia(lista_t lista){
-    lista_t *l=&lista;
-return l->cantidad==0;}
+int lista_vacia(lista_t *l){
+
+return (l->cantidad==0);}
 
