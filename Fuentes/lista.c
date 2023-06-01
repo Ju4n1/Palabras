@@ -28,6 +28,7 @@ int lista_insertar(lista_t *l, elemento_t elem, unsigned int pos){
      if(pos==0&&pos>l->cantidad+1)
         exit(LST_POSICION_INVALIDA);
         else salida=1;
+
      celda_t * nueva=malloc(sizeof(struct celda));
      nueva->elem=(&elem);
      nueva->siguiente=NULL;
@@ -39,8 +40,8 @@ int lista_insertar(lista_t *l, elemento_t elem, unsigned int pos){
      else{
          celda_t * recorrido=l->primera;
          int pos_aux=0;
-         for(int i=0;i<l->cantidad;i++)
-              if(i<l->cantidad)
+         for(int i=1;i<=l->cantidad;i++)
+              if(i<=l->cantidad)
                  {recorrido=recorrido->siguiente;
                   pos_aux=i;}
          if(pos_aux<l->cantidad)
@@ -50,7 +51,7 @@ int lista_insertar(lista_t *l, elemento_t elem, unsigned int pos){
             else if(pos_aux==l->cantidad+1)
                    {recorrido->siguiente=nueva;
                     l->cantidad++;}
-                    else exit(LST_POSICION_INVALIDA);
+
 
          }
 return salida;}
@@ -82,8 +83,9 @@ return salida;}
 elemento_t *lista_elemento(lista_t *l, unsigned int pos){
     if(pos==0&&pos==l->cantidad)
         exit(LST_POSICION_INVALIDA);
+
     celda_t * lee=l->primera;
-    for(int i=0;i<l->cantidad;i++)
+    for(int i=1;i<l->cantidad;i++)
        if(i!=pos)
          lee=lee->siguiente;
 
@@ -91,6 +93,37 @@ return lee->elem;}
 
 
 int lista_ordenar(lista_t *l, funcion_comparacion_t comparar){
+           if(l==NULL)
+        exit(LST_ERROR_MEMORIA);
+
+     lista_t *l2=crear_lista();
+     celda_t *lee,*lee2;
+     elemento_t *e,*e2;
+     lee=l->primera;
+
+     while(lee!=NULL){
+
+          lee2=l2->primera;
+          e=lee->elem;
+          unsigned int pos=1;
+          while(lee2->siguiente!=NULL){
+                e2=lee2->elem;
+                if(1)//(comparara(e,e2))
+                     {lee2=lee2->siguiente;
+                      pos++;}
+                     else break;
+          }
+        e2=malloc(sizeof(struct elemento));
+        e2=e;
+        lista_insertar(l2,*e2,pos);
+        lista_eliminar(l,1);
+
+     }
+
+      free(lee);
+      l = l2;
+
+
 return 1;}
 
 

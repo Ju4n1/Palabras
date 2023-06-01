@@ -78,6 +78,6 @@ extern unsigned int lista_cantidad(lista_t *l);
 /**
    Consulta si la lista está vacia, retornando 0 en caso de que posea al menos un elemento y distinto de 0 de lo contrario.
 **/
-extern int lista_vacia(lista_t lista);
+extern int lista_vacia(lista_t *l);
 
 #endif // LISTA_H_INCLUDED
