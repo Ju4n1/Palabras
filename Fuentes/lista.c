@@ -1,21 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lista.h"
+#include <string.h>
 
-typedef struct celda {
+
+struct celda {
 elemento_t *elem;
 struct celda *siguiente;
 };
-
 /**
    Crea una lista vacia y la referencia a la misma.
 **/
-lista_t* crear_lista(){
+lista_t* lista_crear(){
     lista_t * nueva= malloc(sizeof (struct lista));
     if(nueva==NULL)
         exit(LST_ERROR_MEMORIA);
+
      nueva->cantidad=0;
      nueva->primera=NULL;
+
 return nueva;}
 
 
@@ -30,100 +33,104 @@ int lista_insertar(lista_t *l, elemento_t elem, unsigned int pos){
         else salida=1;
 
      celda_t * nueva=malloc(sizeof(struct celda));
-     nueva->elem=(&elem);
+     elemento_t *e=malloc(sizeof(struct elemento));
+     e->a=(&elem)->a;
+     e->b=(&elem)->b;
+     nueva->elem=e;
      nueva->siguiente=NULL;
 
      if(pos==1)
-        {nueva->siguiente=l->primera;
+        {nueva->siguiente=(l->primera);
          l->primera=nueva;
          l->cantidad++;}
      else{
          celda_t * recorrido=l->primera;
-         int pos_aux=0;
-         for(int i=1;i<=l->cantidad;i++)
-              if(i<=l->cantidad)
-                 {recorrido=recorrido->siguiente;
-                  pos_aux=i;}
-         if(pos_aux<l->cantidad)
-            {nueva->siguiente=recorrido;
-             recorrido->elem=nueva->elem;
-             l->cantidad++;}
-            else if(pos_aux==l->cantidad+1)
+         for(int i=1; i!=pos;i++)
+              if(recorrido->siguiente!=NULL)
+                  recorrido=recorrido->siguiente;
+         if(pos<=l->cantidad)
+           {nueva->siguiente->elem=recorrido->elem;
+            recorrido->elem=e;
+            l->cantidad++;}
+            else if(pos==l->cantidad+1)
                    {recorrido->siguiente=nueva;
                     l->cantidad++;}
 
 
+
          }
+
 return salida;}
 
 
 elemento_t * lista_eliminar(lista_t *l, unsigned int pos){
     elemento_t* salida=NULL;
-    if(pos==0&&pos>l->cantidad)
+    if(pos==0||pos>l->cantidad)
        exit(LST_POSICION_INVALIDA);
+
     celda_t * lee=l->primera;
-    int pos_aux=0;
-    for(int i=0;i<l->cantidad;i++){
-       if(i!=pos)
-         lee=lee->siguiente;
-       pos_aux=i;}
-
-    if(pos_aux==l->cantidad)
-       salida=lee->elem;
-
+    if(pos==1)
+     {l->primera=lee->siguiente;
+      l->cantidad--;
+      free(lee->elem);
+      free(lee);}
     else{
-        lee->elem=(lee->siguiente)->elem;
-        lee=lee->siguiente;}
+         for(int i=1; i<pos-1;i++)
+              if(lee->siguiente!=NULL)
+                  lee=lee->siguiente;
+         if(pos<l->cantidad)
+            {celda_t *eliminar=lee->siguiente;
+             lee->siguiente=lee->siguiente->siguiente;
+             free(eliminar->elem);
+             free(eliminar);
+             l->cantidad--;}
+            else if(pos==l->cantidad)
+                   {celda_t *eliminar=lee->siguiente;
+                    lee->siguiente=NULL;
+                    free(eliminar->elem);
+                    free(eliminar);
+                    l->cantidad--;}
+         }
 
-l->cantidad--;
-free(lee);
+
 return salida;}
 
-
 elemento_t *lista_elemento(lista_t *l, unsigned int pos){
-    if(pos==0&&pos==l->cantidad)
+    if(pos==0||pos>l->cantidad)
         exit(LST_POSICION_INVALIDA);
 
     celda_t * lee=l->primera;
-    for(int i=1;i<l->cantidad;i++)
-       if(i!=pos)
-         lee=lee->siguiente;
-
+    for(int i=1;i<pos;i++)
+       lee=lee->siguiente;
 return lee->elem;}
 
 
 int lista_ordenar(lista_t *l, funcion_comparacion_t comparar){
-           if(l==NULL)
-        exit(LST_ERROR_MEMORIA);
+        lista_t* laux=lista_crear();
+        celda_t* lee;
+        celda_t* menor;
 
-     lista_t *l2=crear_lista();
-     celda_t *lee,*lee2;
-     elemento_t *e,*e2;
-     lee=l->primera;
+        while(!lista_vacia(l)){
+             lee=l->primera;
+             menor=l->primera;
+             int pos=1;
+             int posMenor=1;
 
-     while(lee!=NULL){
-
-          lee2=l2->primera;
-          e=lee->elem;
-          unsigned int pos=1;
-          while(lee2->siguiente!=NULL){
-                e2=lee2->elem;
-                if(1)//(comparara(e,e2))
-                     {lee2=lee2->siguiente;
-                      pos++;}
-                     else break;
-          }
-        e2=malloc(sizeof(struct elemento));
-        e2=e;
-        lista_insertar(l2,*e2,pos);
-        lista_eliminar(l,1);
-
-     }
-
-      free(lee);
-      l = l2;
-
-
+             while(pos<=lista_cantidad(l)){
+                   if(comparar(lee->elem,menor->elem)==ELEM1_MENOR_QUE_ELEM2)
+                     {posMenor=pos;
+                      menor=lee;
+                      }
+                   lee=lee->siguiente;
+                   pos++;
+                   }
+             elemento_t* nuevo=malloc(sizeof(struct elemento));
+             nuevo->a=menor->elem->a;
+             nuevo->b=menor->elem->b;
+             lista_insertar(laux,*nuevo,lista_cantidad(laux)+1);
+             lista_eliminar(l,posMenor);
+             }
+*l=*laux;
 return 1;}
 
 
