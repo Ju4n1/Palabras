@@ -28,7 +28,7 @@ extern int multiset_cantidad(multiset_t *m, char *s);
  * @m multiset @f función comparación
  * Retorna lista con los elementos almacenados en el multiset y si cantidad de apariciones.
 **/
-extern lista_t multiset_elementos(multiset_t *m, int (*f)(elemento_t*t1,elemento_t*t2));
+extern lista_t multiset_elementos(multiset_t *m);
 
 /**
  * @m multiset

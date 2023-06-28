@@ -26,7 +26,7 @@ return m;}
  void multiset_insertar(multiset_t *m, char *s){
       multiset_t* leo=m;
       int pos=0;
-      for(int i=0;s[i]=='\0'; i++){
+      for(int i=0;i<strlen(s); i++){
           pos=s[i];
           pos=pos-97; //siguiente[0]!=NULL significa que "a" está presente, [25]=NULL lo mismo para "z"
           if(leo->siguiente[pos]==NULL)
@@ -38,31 +38,22 @@ return m;}
                  (leo->siguiente[pos])->cantidad=(leo->siguiente[pos])->cantidad+1;
                  leo=leo->siguiente[pos];
                  }
-
        }
+}
 
- }
+ int multiset_cantidad(multiset_t *m, char *s)
+{
+    int pos, salida;
+    multiset_t* p = m;
 
-
- int multiset_cantidad(multiset_t *m, char *s){
-        int cantidad= 0;
-        multiset_t *leo = malloc(sizeof(multiset_t));
-        leo =m;
-
-        //Cantidad apariciones primer letra palabra.
-        if(s[0] !='\0' && leo -> siguiente[s[0] -97]!= NULL)
-              cantidad = (leo -> siguiente[s[0]-97]) -> cantidad;
-
-       //La ultima letra de la palabra tiene cantidad de apariciones,
-      // las letras anteriores pueden contener prefijos.
-       for(int i = 0; s[i] != '\0' && cantidad; i++){
-            if(leo -> siguiente[s[i] -97]!= NULL){
-               if( ((leo -> siguiente[s[i]-97]) -> cantidad) < cantidad )
-                    cantidad = (leo -> siguiente[s[i]-97]) -> cantidad;}
-                 else cantidad = 0;}
-
-
-return cantidad;}
+    for(int i = 0; i < strlen(s); i++){
+        pos = s[i]-97;
+        if(p->siguiente[pos] == NULL)
+            salida=0;
+        p = p->siguiente[pos];
+    }
+salida=p->cantidad;
+return salida;}
 
 /**
  * @m arbol a recorrer, @l lista a insertar elementos, @palabra palabra actual,@nivel nivel de recorrido.
@@ -70,27 +61,31 @@ return cantidad;}
 **/
 void insertarPreOrdenAux(multiset_t *m, lista_t *l, char *palabra, int nivel){
     elemento_t *elemAux = malloc(sizeof(elemento_t));
-    elemAux -> b = malloc(sizeof(char));
-
+    elemAux -> b = malloc(sizeof(char)*26);
+    int aux=0;
     if(m -> cantidad>0 ){
         palabra [nivel] ='\0';
         elemAux->a = m-> cantidad;
         elemAux->b = strdup(palabra);
-        lista_insertar (l, *elemAux, lista_cantidad(l));
-    }
+        // lista_insertar (l, *elemAux, lista_cantidad(l)+1); inserta todos los prefijos podría usarse en otro problema
+       }
     for (int pos = 0; pos < 26; pos++){
         if(m -> siguiente[pos] != NULL){
             palabra [nivel]= 97 +pos;
-            insertarPreOrdenAux(m ->siguiente [pos], l,palabra, nivel +1);
+            insertarPreOrdenAux(m ->siguiente [pos], l,palabra, nivel+1);
+            aux=pos;
         }
     }
+     //Espero a tener la palabra completa para insertarla sino, inserta todos sus prefijos tambien.
+     if(m -> siguiente[aux] == NULL)
+        lista_insertar (l, *elemAux, lista_cantidad(l)+1);
 }
 
 
 
-lista_t multiset_elementos(multiset_t *m, int (*f)(elemento_t* t1,elemento_t* t2)){
+lista_t multiset_elementos(multiset_t *m){
         lista_t *l=lista_crear();
-        char *palabra = malloc(sizeof(char));
+        char *palabra = malloc(sizeof(char)*26);
         insertarPreOrdenAux(m, l, palabra, 0);
 
 return (*l);}
@@ -108,18 +103,15 @@ free(e);}
  *Función cascaron de eliminar.
 **/
 void eliminar_aux(multiset_t *m,void(destruir_elemento(void*))){
-
-         if(m != NULL)
-           {for(int i = 0; i < 26; i++)
+        if(m != NULL)
+           for(int i = 0; i < 26; i++)
               {eliminar_aux(m->siguiente[i], destruir_elemento);}
-
-            free(m);}
 }
 
 
 void multiset_eliminar(multiset_t **m){
-           eliminar_aux(*m,destruir_elemento);
-           free(*m);
+        eliminar_aux(*m,destruir_elemento);
+        free(*m);
 
 }
 
