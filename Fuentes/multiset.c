@@ -82,7 +82,10 @@ void insertarPreOrdenAux(multiset_t *m, lista_t *l, char *palabra, int nivel){
 }
 
 
-
+/**
+ * Al no necesitar estar ordenado la funcion "int f" la quité para evitar
+ * confuciones.
+**/
 lista_t multiset_elementos(multiset_t *m){
         lista_t *l=lista_crear();
         char *palabra = malloc(sizeof(char)*26);

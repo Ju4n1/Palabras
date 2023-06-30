@@ -33,15 +33,6 @@ comparacion_resultado_t funcion_comparacion(elemento_t *elem1, elemento_t *elem2
 
 return salida;}
 
-void mostrar(lista_t *l){
-   elemento_t *e;
-
-   for(int i=1;i<=lista_cantidad(l);i++){
-     e=lista_elemento(l,i);
-
-     printf(" %i %s \n",e->a,e->b);
-    }
-}
 /**
   * Como uso la lista como estructura adicional y no tiene destriur implemento uno
   * a fin de que el codigo sea más legible y no repertir el sgte fragmento de código.
@@ -51,15 +42,19 @@ void lista_destruir(lista_t*l){
          lista_eliminar(l,1);}
 free(l);}
 
+/**
+* Menu de ayudas al usuario.
+**/
 void help(){
        printf("-----------///*Bievenido-a-la-Guia-de-usuario*////-----------\n\n\n");
        printf("El siguiente programa permite analisis palabras almacenadas en archivos dados por el usuario.\n");
        printf("Recuerde que debe proporcionar directorio donde se encuentren los archivos a analizar.\n");
        printf("Ejemplo: cuentapalabras.exe h- directorio,  h- es opcional y directorio apunta a la carpeta donde almacena los archivos.\n");
-       printf("Cuando ingrese un directorio utilice dos barras de separador en vez de una como acá c:\\disco \n\n\n\n");
+       printf("Cuando ingrese un directorio utilice barras de separador ejemplo c:\\disco\\archivos \n\n\n\n");
 }
+
 /**
- * Este codigo lo dio la cátedra, recupera nombre de los archivos txt
+ * Este codigo lo dio la cátedra, recupera nombres de los archivos txt
  * en caso que haya alguno.
 **/
 void nombres_archivos(char * c,lista_t* l){
@@ -84,7 +79,7 @@ void nombres_archivos(char * c,lista_t* l){
                     strcpy(c1,ent->d_name);
                     e->a=1;
                     e->b=c1;
-                    lista_insertar(l,*e,1);
+                    lista_insertar(l,*e,lista_cantidad(l)+1);
 
                 }
               ent = readdir (dir);
@@ -112,7 +107,9 @@ void lista_a_archivo(FILE* salida,lista_t *l){
 
 
 }
-
+/**
+ * Accede al contenido del archivo f1 y lo muestra en pantalla.
+**/
 void mostrar_arc(FILE* f1){
       rewind(f1);
      char* c=malloc(sizeof(char)*26);
@@ -130,7 +127,7 @@ void mostrar_arc(FILE* f1){
      }
 }
 /**
-  *Genero el archivo de salida totales.out
+  *Genero el archivo de salida totales.out, ordenando todas las palabras
   * a partir de los archivos del directoria pasado.
 **/
 void salida_total(FILE* f1,lista_t* nombres,char*dir,char*dir2){
@@ -159,13 +156,12 @@ void salida_total(FILE* f1,lista_t* nombres,char*dir,char*dir2){
 
 multiset_eliminar(&m);
 lista_destruir(aux);
-
-
-
-
-
 }
-
+/**
+ * Genera el archivo de salida cadauno.out, ordenando las palabras de cada
+ * archivo distinguiendo a cual pertenece cada una, a partir del directorio
+ * que aporto el usuario.
+**/
 void salida_cada_uno(FILE* f1, lista_t* nombres,char*dir,char* dir2){
       rewind(f1);
       strcat(dir,"\\");  strcat(dir,"\\");
@@ -208,17 +204,19 @@ void salida_cada_uno(FILE* f1, lista_t* nombres,char*dir,char* dir2){
 
 lista_a_archivo(f1,total);
 
-
-
 }
-
+/**
+ * Menu de operaciones.
+**/
 void menu(){
     printf("\n Para salir ingrese 0 \n\n");
     printf("\n Para analizar palabras por archivo separados ingrese 1 \n\n");
     printf("\n Para analizar palabras de todos los archivos ingrese 2 \n\n");
 
 }
-
+/**
+ * Ejecuta cada una de las funcionalidades de la aplicacion.
+**/
 void programa(char* directorio){
       lista_t* nombres=lista_crear();
       nombres_archivos(directorio,nombres);
@@ -226,7 +224,7 @@ void programa(char* directorio){
       char* dir_aux=malloc(sizeof(char)*80);
       strcpy(dir_aux,directorio);
       if(lista_vacia(nombres))
-         printf("\n El directorios es valido pero no contiene archivos \n");
+         printf("\n El directorios es valido pero no contiene archivos,asegurese que contenga los archivos y vuelva a intentar\n");
          else{
               int continuar=100;
               while(continuar!=0){
@@ -247,10 +245,13 @@ void programa(char* directorio){
                     printf("\n\n La aplicacion se ejecuto con exito!!!\n");
               }
               }
-lista_destruir(nombres);}
+lista_destruir(nombres);
+}
 
 
-
+/**
+ *Administra la entrada por linea de comandos.
+**/
 int main(int argc, char* argv[]){
 
 if(argc==1)
@@ -262,17 +263,10 @@ if(argc==1)
           else{
               help();
               char* pal=malloc(sizeof(char)*80);//directorio
-               if(argc==2)
-                  {pal=argv[1]; printf("directorio es %s",pal);}
-                  else {pal=argv[2];printf("directorio es %s",pal);}
+              if(argc==2)
+                  {pal=argv[1]; }
+                  else {pal=argv[2];}
                   programa(pal);
-                  free(pal);
-                  printf("Se liveró espacio auxiliar");
-              }
-
-
-
-
-
+            }
 
 return 0;}
